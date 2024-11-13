@@ -1,10 +1,19 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:notedeck_app/create_page.dart';
 import 'package:notedeck_app/forgot_page.dart';
 import 'package:notedeck_app/login_page.dart';
 import 'Main_page.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: const FirebaseOptions(
+          apiKey: "AIzaSyBpiyScoTPLaAAadMUx0IG9rF-PBwbtBu0",
+          appId: "1:623410508138:android:5d314991338eb5fa167513",
+          messagingSenderId: "623410508138",
+          projectId: "notedeck-94a49"));
+
   runApp(const MyApp());
 }
 

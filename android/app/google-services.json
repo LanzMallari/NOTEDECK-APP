@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "623410508138",
+    "project_id": "notedeck-94a49",
+    "storage_bucket": "notedeck-94a49.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623410508138:android:5d314991338eb5fa167513",
+        "android_client_info": {
+          "package_name": "com.example.notedeck_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpiyScoTPLaAAadMUx0IG9rF-PBwbtBu0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:notedeck_app/login_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -9,6 +11,16 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<void> _logout() async {
+    await _auth.signOut();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,36 +28,38 @@ class _MainPageState extends State<MainPage> {
         children: [
           // Taskbar
           Container(
-            color: const Color.fromARGB(
-                255, 185, 182, 182), // Gray color for the taskbar
+            color: const Color.fromARGB(255, 185, 182, 182), // Gray color for the taskbar
             padding: const EdgeInsets.all(16.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Action Icon Button
                 IconButton(
-                  icon: Icon(
-                    FontAwesomeIcons.heart, // Example action icon (settings)
+                  icon: const Icon(
+                    FontAwesomeIcons.heart,
                     color: Colors.white,
                   ),
                   onPressed: () {
                     // Action to perform when button is pressed
-                    // For example, navigate to a settings page
                   },
                 ),
                 // Title centered in the row
-                Expanded(
-                  child: Center(
-                    child: Text(
-                      'NOTEDECK',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white, // Text color
-                      ),
-                    ),
+                const Text(
+                  'NOTEDECK',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
-                // You can add more items here in the row if needed
+                // Logout Icon Button
+                IconButton(
+                  icon: const Icon(
+                    FontAwesomeIcons.signOutAlt, // Icon for logout
+                    color: Colors.white,
+                  ),
+                  onPressed: _logout, // Call _logout when button is pressed
+                ),
               ],
             ),
           ),
@@ -53,7 +67,7 @@ class _MainPageState extends State<MainPage> {
           Padding(
             padding: const EdgeInsets.all(12.12),
             child: TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Search For Notes?',
                 prefixIcon: Icon(FontAwesomeIcons.magnifyingGlass),
                 border: OutlineInputBorder(),
@@ -62,8 +76,8 @@ class _MainPageState extends State<MainPage> {
               ),
             ),
           ),
-          // Main content area (optional)
-          Expanded(
+          // Main content area
+          const Expanded(
             child: Center(
               child: Text('Your notes will appear here.'),
             ),
