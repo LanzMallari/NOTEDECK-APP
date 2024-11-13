@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:notedeck_app/login_page.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:notedeck_app/login_page.dart'; // Import LoginPage for navigation
 
 class CreateAcc extends StatefulWidget {
   const CreateAcc({super.key});
@@ -20,52 +19,26 @@ class _CreateAccState extends State<CreateAcc> {
     String password = _passwordController.text;
 
     try {
-      if (email.isEmpty || password.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter both email and password.')),
-        );
-        return;
-      }
-
       // Create a new user with email and password
       await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      // Sign out the user right after account creation
-      await _auth.signOut();
-
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Account created successfully. Please log in.')),
+        SnackBar(content: Text('Account created successfully. Please log in.')),
       );
 
-      // Navigate back to the login page
+      // Navigate to the login page after account creation
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const LoginPage()),
       );
     } on FirebaseAuthException catch (e) {
-      String errorMessage = 'Error: ${e.message}';
-      if (e.code == 'email-already-in-use') {
-        errorMessage = 'The email is already in use. Please try another one.';
-      } else if (e.code == 'weak-password') {
-        errorMessage = 'The password is too weak. Please choose a stronger password.';
-      } else if (e.code == 'invalid-email') {
-        errorMessage = 'The email address is not valid. Please enter a valid email.';
-      }
-
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
+        SnackBar(content: Text('Error: ${e.message}')),
       );
     }
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
   }
 
   @override
@@ -89,7 +62,6 @@ class _CreateAccState extends State<CreateAcc> {
               obscureText: true,
               decoration: const InputDecoration(labelText: 'Password'),
             ),
-            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _createAccount,
               child: const Text('Create Account'),

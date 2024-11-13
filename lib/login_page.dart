@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:notedeck_app/create_page.dart';
 import 'package:notedeck_app/main_page.dart';
 import 'adminpage.dart';
+import 'forgot_page.dart'; // Import the ForgotPassword screen here
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -93,6 +94,12 @@ class _LoginPage extends State<LoginPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Add Image above the Email TextField
+                Image.asset(
+                  'images/list1.png',  // Make sure to replace this with the correct path if different
+                  height: 150,  // Adjust the height as needed
+                ),
+                const SizedBox(height: 20), // Space between image and email field
                 TextField(
                   controller: _usernameController,
                   decoration: const InputDecoration(labelText: 'Email'),
@@ -112,6 +119,25 @@ class _LoginPage extends State<LoginPage> {
                     minimumSize: const Size(double.infinity, 50),
                     backgroundColor: const Color.fromARGB(255, 241, 223, 58),
                     foregroundColor: Colors.white,
+                  ),
+                ),
+                // Forgot Password Text Button
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      // Navigate to the ForgotPassword screen (make sure to create this screen)
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ForgotPage()),
+                      );
+                    },
+                    child: const Text(
+                      'Forgot Password?',
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 241, 223, 58), // Yellow color
+                      ),
+                    ),
                   ),
                 ),
                 TextButton(

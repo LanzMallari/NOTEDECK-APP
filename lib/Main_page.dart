@@ -28,7 +28,7 @@ class _MainPageState extends State<MainPage> {
         children: [
           // Taskbar
           Container(
-            color: const Color.fromARGB(255, 185, 182, 182), // Gray color for the taskbar
+            color: const Color.fromARGB(255, 241, 223, 58), // Gray color for the taskbar
             padding: const EdgeInsets.all(16.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,7 +72,7 @@ class _MainPageState extends State<MainPage> {
                 prefixIcon: Icon(FontAwesomeIcons.magnifyingGlass),
                 border: OutlineInputBorder(),
                 filled: true,
-                fillColor: Color.fromARGB(255, 185, 182, 182),
+                fillColor: Color.fromARGB(255,255,255,255),
               ),
             ),
           ),
@@ -84,6 +84,18 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
       ),
+      // Floating Action Button for adding new note
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Action to perform when button is pressed (e.g., navigate to another screen)
+        },
+        backgroundColor: Color.fromARGB(255, 241, 223, 58),  // Button color (yellow)
+        child: const Icon(
+          FontAwesomeIcons.plus,  // Add icon
+          color: Colors.white,
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,  // Position at the lower right
     );
   }
 }
