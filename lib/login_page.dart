@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:notedeck_app/create_page.dart';
 import 'package:notedeck_app/main_page.dart';
+import 'adminpage.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,9 +16,22 @@ class _LoginPage extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  final String adminEmail = "admin123@gmail.com";
+  final String adminPassword = "admin123";
+
   Future<void> _login() async {
     String email = _usernameController.text;
     String password = _passwordController.text;
+
+    // Check if the entered email and password match the admin credentials
+    if (email == adminEmail && password == adminPassword) {
+      // If it's admin, navigate to the admin page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const AdminPage()),
+      );
+      return;
+    }
 
     try {
       // Attempt to sign in the user
@@ -36,6 +50,7 @@ class _LoginPage extends State<LoginPage> {
         MaterialPageRoute(builder: (context) => const MainPage()),
       );
     } on FirebaseAuthException catch (e) {
+      // Handle specific Firebase authentication errors
       if (e.code == 'user-not-found') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('No user found for that email.')),
@@ -43,6 +58,10 @@ class _LoginPage extends State<LoginPage> {
       } else if (e.code == 'wrong-password') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Incorrect password.')),
+        );
+      } else if (e.code == 'too-many-requests') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Too many attempts. Try again later.')),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
