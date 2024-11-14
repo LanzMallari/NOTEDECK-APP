@@ -10,53 +10,23 @@ class AdminPage extends StatefulWidget {
 
 class _AdminPageState extends State<AdminPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  // List to hold the users from Firestore
-  List<QueryDocumentSnapshot> _users = [];
-  bool _isLoading = true;
+  late Future<QuerySnapshot> _usersFuture;
 
   @override
   void initState() {
     super.initState();
-    _fetchUsersFromFirestore();
+    // Fetching users when the page is initialized
+    _usersFuture = _fetchUsers();
   }
 
-  // Fetch users from Firestore
-  Future<void> _fetchUsersFromFirestore() async {
+  // Fetch all users from the Firestore 'users' collection
+  Future<QuerySnapshot> _fetchUsers() async {
     try {
-      final snapshot = await _firestore.collection('users').get();
-      setState(() {
-        _users = snapshot.docs;
-        _isLoading = false;
-      });
+      // Query Firestore for all users
+      return await _firestore.collection('users').get();
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error fetching users from Firestore: $e')),
-      );
-    }
-  }
-
-  // Delete the user from Firestore
-  Future<void> _deleteUser(String uid) async {
-    try {
-      // Delete from both Firestore and Authentication (optional - if set up)
-      await _firestore.collection('users').doc(uid).delete();
-
-      setState(() {
-        // Remove user from the list
-        _users.removeWhere((user) => user.id == uid);
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('User $uid deleted successfully from Firestore.')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error deleting user from Firestore: $e')),
-      );
+      print("Error fetching users: $e");
+      rethrow; // You can handle errors here as needed
     }
   }
 
@@ -64,28 +34,33 @@ class _AdminPageState extends State<AdminPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Admin Page - User Accounts'),
+        title: const Text("Admin Page"),
+        backgroundColor: Colors.blue,
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _users.isEmpty
-          ? const Center(child: Text('No users found.'))
-          : ListView.builder(
-        itemCount: _users.length,
-        itemBuilder: (context, index) {
-          final user = _users[index].data() as Map<String, dynamic>;
-          final userId = _users[index].id;
-          final userEmail = user['email'] ?? 'No Email';
+      body: FutureBuilder<QuerySnapshot>(
+        future: _usersFuture, // The future that fetches users
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Error fetching users.'));
+          } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('No users found.'));
+          } else {
+            // Extract users from the snapshot
+            final users = snapshot.data!.docs;
 
-          return ListTile(
-            leading: const Icon(Icons.account_circle, color: Colors.blue),
-            title: Text(userEmail),
-            subtitle: Text('User ID: $userId'), // Display user ID as additional info
-            trailing: IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: () => _deleteUser(userId),
-            ),
-          );
+            return ListView.builder(
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                var user = users[index];
+                return ListTile(
+                  title: Text(user['email']),  // Display user email
+                  subtitle: Text('UID: ${user['uid']}'),  // Display user UID
+                );
+              },
+            );
+          }
         },
       ),
     );

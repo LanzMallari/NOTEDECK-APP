@@ -70,20 +70,17 @@ class _CreateAccState extends State<CreateAcc> {
               ),
               const SizedBox(height: 30), // Space between image and text
               const Text(
-                'Create Account',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                'Enter your email and password to create an account',
+                style: TextStyle(fontSize: 16),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 10),
               TextField(
                 controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
                 ),
-                keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 10),
               TextField(
