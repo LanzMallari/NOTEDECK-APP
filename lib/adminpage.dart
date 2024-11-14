@@ -42,6 +42,7 @@ class _AdminPageState extends State<AdminPage> {
   // Delete the user from Firestore
   Future<void> _deleteUser(String uid) async {
     try {
+      // Delete from both Firestore and Authentication (optional - if set up)
       await _firestore.collection('users').doc(uid).delete();
 
       setState(() {
@@ -79,6 +80,7 @@ class _AdminPageState extends State<AdminPage> {
           return ListTile(
             leading: const Icon(Icons.account_circle, color: Colors.blue),
             title: Text(userEmail),
+            subtitle: Text('User ID: $userId'), // Display user ID as additional info
             trailing: IconButton(
               icon: const Icon(Icons.delete, color: Colors.red),
               onPressed: () => _deleteUser(userId),

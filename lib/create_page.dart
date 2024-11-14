@@ -45,28 +45,81 @@ class _CreateAccState extends State<CreateAcc> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Account'),
+        backgroundColor: Colors.transparent, // Make AppBar background transparent
+        elevation: 0, // Remove AppBar shadow
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFFFD700), Colors.white], // Yellow to White gradient
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            TextField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
-            ),
-            ElevatedButton(
-              onPressed: _createAccount,
-              child: const Text('Create Account'),
-            ),
-          ],
+      body: Center( // Center the content of the page
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center, // Center vertically
+            crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
+            children: [
+              Image.asset(
+                'images/list1.png', // Path to the image
+                height: 100, // Adjust the height as needed
+              ),
+              const SizedBox(height: 30), // Space between image and text
+              const Text(
+                'Create Account',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 50),
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 50),
+              Container(
+                width: double.infinity, // Full width button
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFFFD700), Colors.white], // Yellow to White gradient
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(8), // Rounded corners
+                ),
+                child: ElevatedButton(
+                  onPressed: _createAccount,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent, // Make button background transparent
+                    elevation: 0, // Remove button shadow
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text(
+                    'Create Account',
+                    style: TextStyle(color: Colors.black), // Text color changed to black for contrast
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

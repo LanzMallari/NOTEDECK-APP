@@ -26,53 +26,70 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       body: Column(
         children: [
-          // Taskbar
+          // Taskbar with Gradient Background
           Container(
-            color: const Color.fromARGB(255, 241, 223, 58), // Gray color for the taskbar
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 241, 223, 58),  // Yellow
+                  Colors.white,  // White
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomRight,
+              ),
+            ),
             padding: const EdgeInsets.all(16.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Action Icon Button
-                IconButton(
-                  icon: const Icon(
-                    FontAwesomeIcons.heart,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    // Action to perform when button is pressed
-                  },
-                ),
-                // Title centered in the row
+                // Title aligned to the left
                 const Text(
                   'NOTEDECK',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Colors.black,  // Black color for text
                   ),
                 ),
-                // Logout Icon Button
-                IconButton(
-                  icon: const Icon(
-                    FontAwesomeIcons.signOutAlt, // Icon for logout
-                    color: Colors.white,
-                  ),
-                  onPressed: _logout, // Call _logout when button is pressed
+
+                // Spacer to push the buttons to the right
+                const Spacer(),
+
+                // Row containing heart and logout button, aligned to the right
+                Row(
+                  children: [
+                    // Action Icon Button (Heart)
+                    IconButton(
+                      icon: const Icon(
+                        FontAwesomeIcons.heart,
+                        color: Colors.black,  // Black color for the icon
+                      ),
+                      onPressed: () {
+                        // Action to perform when button is pressed
+                      },
+                    ),
+                    // Logout Icon Button
+                    IconButton(
+                      icon: const Icon(
+                        FontAwesomeIcons.signOutAlt, // Icon for logout
+                        color: Colors.black,  // Black color for icon
+                      ),
+                      onPressed: _logout, // Call _logout when button is pressed
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          // Search Bar
+          // Search Bar with Gradient Background
           Padding(
             padding: const EdgeInsets.all(12.12),
             child: TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Search For Notes?',
-                prefixIcon: Icon(FontAwesomeIcons.magnifyingGlass),
+                prefixIcon: const Icon(FontAwesomeIcons.magnifyingGlass),
                 border: OutlineInputBorder(),
                 filled: true,
-                fillColor: Color.fromARGB(255,255,255,255),
+                fillColor: Colors.white, // White background for the text field
               ),
             ),
           ),
@@ -84,15 +101,28 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
       ),
-      // Floating Action Button for adding new note
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Action to perform when button is pressed (e.g., navigate to another screen)
-        },
-        backgroundColor: Color.fromARGB(255, 241, 223, 58),  // Button color (yellow)
-        child: const Icon(
-          FontAwesomeIcons.plus,  // Add icon
-          color: Colors.white,
+      // Floating Action Button with Gradient Background
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 241, 223, 58),  // Yellow
+              Colors.white,  // White
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          shape: BoxShape.circle,  // To make it circular
+        ),
+        child: FloatingActionButton(
+          onPressed: () {
+            // Action to perform when button is pressed (e.g., navigate to another screen)
+          },
+          backgroundColor: Colors.transparent,  // Transparent for the gradient
+          child: const Icon(
+            FontAwesomeIcons.plus,  // Add icon
+            color: Colors.black,  // Icon color (black)
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,  // Position at the lower right

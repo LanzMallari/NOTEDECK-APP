@@ -21,13 +21,18 @@ class _ForgotPageState extends State<ForgotPage> {
           Container(
             height: 60, // Height of the top bar
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            color: const Color.fromARGB(
-                255, 241, 223, 58), // Background color of the top bar
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFFFD700), Colors.white], // Yellow to White gradient
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
             child: Row(
               children: [
                 // Back button on the left
                 IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  icon: const Icon(Icons.arrow_back, color: Colors.black),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -43,7 +48,7 @@ class _ForgotPageState extends State<ForgotPage> {
                       'Forgot Password',
                       style: const TextStyle(
                         fontSize: 15,
-                        color: Colors.white, // Text color
+                        color: Colors.black, // Text color changed to black for contrast
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -72,9 +77,17 @@ class _ForgotPageState extends State<ForgotPage> {
             ),
           ),
 
-          // NEXT button
+          // NEXT button with gradient background
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFFFD700), Colors.white], // Yellow to White gradient
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(8), // Optional: rounded corners for the button
+            ),
             child: ElevatedButton(
               onPressed: () {
                 // Navigate to OTP page when NEXT button is pressed
@@ -86,10 +99,13 @@ class _ForgotPageState extends State<ForgotPage> {
               child: const Text('NEXT'),
               style: ElevatedButton.styleFrom(
                 minimumSize:
-                    const Size(double.infinity, 50), // Full width button
-                backgroundColor:
-                    const Color.fromARGB(255, 241, 223, 58), // Button color
-                foregroundColor: Colors.white, // Text color
+                const Size(double.infinity, 50), // Full width button
+                backgroundColor: Colors.transparent, // Set to transparent to show the gradient
+                foregroundColor: Colors.black, // Text color changed to black for contrast
+                shadowColor: Colors.transparent, // No shadow
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8), // Match the border radius of the container
+                ),
               ),
             ),
           ),

@@ -50,7 +50,7 @@ class _OtpPageState extends State<OtpPage> {
                 // Get OTP values
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const NewpassPage()),
+                  MaterialPageRoute(builder: (context) => const CreateNewPasswordPage()),
                 );
 
                 // You can add OTP verification logic here
