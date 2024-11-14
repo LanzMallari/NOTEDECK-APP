@@ -1,9 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:notedeck_app/create_page.dart';
-import 'package:notedeck_app/forgot_page.dart';
 import 'package:notedeck_app/login_page.dart';
-import 'Main_page.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();

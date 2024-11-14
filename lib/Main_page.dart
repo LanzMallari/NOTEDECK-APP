@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:notedeck_app/login_page.dart';
-
+import 'package:notedeck_app/notes_create.dart';
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
@@ -115,7 +115,10 @@ class _MainPageState extends State<MainPage> {
           shape: BoxShape.circle,  // To make it circular
         ),
         child: FloatingActionButton(
-          onPressed: () {
+          onPressed: () { Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NotePage()),
+          );
             // Action to perform when button is pressed (e.g., navigate to another screen)
           },
           backgroundColor: Colors.transparent,  // Transparent for the gradient
