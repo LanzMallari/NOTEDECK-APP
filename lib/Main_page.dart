@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'dart:math'; // For generating random colors
-import 'package:intl/intl.dart'; // For formatting dates and times
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart'; // Import StaggeredGridView
+import 'dart:math';
+import 'package:intl/intl.dart';
 import 'login_page.dart';
-import 'note.dart'; // Import the new NoteScreen
+import 'note.dart';
 import 'package:notedeck_app/services/firestore.dart';
-import 'favorites.dart';  // Import the new FavoritesPage
-import 'note.dart'; // Import the NoteScreen
+import 'favorites.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -18,14 +18,14 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final FirestoreService firestoreService = FirestoreService();
-  final List<Color> colors = []; // To store random colors for notes
+  final List<Color> colors = []; // Store random colors for notes
+  final Random random = Random(); // Random generator
   final TextEditingController searchController = TextEditingController();
   List<DocumentSnapshot> filteredNotes = [];
   bool isSearching = false;
 
   // Generate a random light color for notes
   Color _generateRandomColor() {
-    final Random random = Random();
     return Color.fromRGBO(
       180 + random.nextInt(76), // R value between 180 and 255
       180 + random.nextInt(76), // G value between 180 and 255
@@ -38,23 +38,6 @@ class _MainPageState extends State<MainPage> {
   void _ensureColors(int count) {
     while (colors.length < count) {
       colors.add(_generateRandomColor());
-    }
-  }
-
-  // Filter notes based on search query
-  void _filterNotes(String query, List<DocumentSnapshot> notes) {
-    if (query.isEmpty) {
-      setState(() {
-        isSearching = false;
-      });
-    } else {
-      setState(() {
-        isSearching = true;
-        filteredNotes = notes.where((note) {
-          final title = note['title']?.toString().toLowerCase() ?? '';
-          return title.contains(query.toLowerCase());
-        }).toList();
-      });
     }
   }
 
@@ -92,7 +75,6 @@ class _MainPageState extends State<MainPage> {
             ),
           ),
           actions: [
-            // Favorite Icon Button
             IconButton(
               onPressed: navigateToFavoritesPage,
               icon: const Icon(Icons.favorite),
@@ -106,7 +88,6 @@ class _MainPageState extends State<MainPage> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            // Navigate to NoteScreen when FAB is clicked
             final result = await Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => NoteScreen()),
@@ -116,8 +97,9 @@ class _MainPageState extends State<MainPage> {
               setState(() {}); // Update the UI after saving a note
             }
           },
-          backgroundColor: Colors.yellow, // Set the background color to yellow
+          backgroundColor: Colors.yellow,
           child: const Icon(Icons.add),
+          shape: const CircleBorder(),
         ),
         body: Column(
           children: [
@@ -127,7 +109,7 @@ class _MainPageState extends State<MainPage> {
                 controller: searchController,
                 decoration: InputDecoration(
                   hintText: 'Search notes...',
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),
@@ -145,9 +127,8 @@ class _MainPageState extends State<MainPage> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     List<DocumentSnapshot> notesList = snapshot.data!.docs;
-                    _ensureColors(notesList.length); // Ensure colors match note count
+                    _ensureColors(notesList.length);
 
-                    // Filter notes based on search query
                     final displayedNotes = isSearching
                         ? notesList.where((note) {
                       final title = note['title']?.toString().toLowerCase() ?? '';
@@ -157,35 +138,35 @@ class _MainPageState extends State<MainPage> {
 
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      child: MasonryGridView.builder(
+                        gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2, // Number of columns
-                          crossAxisSpacing: 8.0, // Horizontal space between items
-                          mainAxisSpacing: 8.0, // Vertical space between items
-                          childAspectRatio: 0.8, // Set fixed aspect ratio for consistent box sizes
                         ),
+                        mainAxisSpacing: 8.0, // Vertical space between items
+                        crossAxisSpacing: 8.0, // Horizontal space between items
                         itemCount: displayedNotes.length,
                         itemBuilder: (context, index) {
                           DocumentSnapshot document = displayedNotes[index];
                           String docID = document.id;
                           Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-                          String noteTitle = data['title'] ?? '';  // Assuming title field
-                          String noteDescription = data['description'] ?? '';  // Assuming description field
+                          String noteTitle = data['title'] ?? '';
+                          String noteDescription = data['description'] ?? '';
                           Timestamp timestamp = data['timestamp'] ?? Timestamp.now();
                           String formattedDate = DateFormat('EEE, d MMM yyyy, h:mm a').format(timestamp.toDate());
 
-                          // Display only a small part of the description
-                          String briefDescription = noteDescription.length > 50
-                              ? noteDescription.substring(0, 50) + '...'
-                              : noteDescription;
+                          // Generate random height for each note
+                          double randomHeight = random.nextDouble() * 100 + 150; // Height between 150 and 250
 
                           return GestureDetector(
                             onTap: () async {
-                              // Navigate to NoteScreen to edit the note
                               final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => NoteScreen(docID: docID, initialText: noteDescription, initialTitle: noteTitle),
+                                  builder: (context) => NoteScreen(
+                                    docID: docID,
+                                    initialText: noteDescription,
+                                    initialTitle: noteTitle,
+                                  ),
                                 ),
                               );
 
@@ -194,9 +175,10 @@ class _MainPageState extends State<MainPage> {
                               }
                             },
                             child: Container(
+                              height: randomHeight,
                               padding: const EdgeInsets.all(16.0),
                               decoration: BoxDecoration(
-                                color: colors[index], // Use a random light color for the note
+                                color: colors[index],
                                 borderRadius: BorderRadius.circular(12.0),
                                 boxShadow: [
                                   BoxShadow(
@@ -215,17 +197,19 @@ class _MainPageState extends State<MainPage> {
                                     style: const TextStyle(
                                       fontSize: 18.0,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.black, // Dark color for title to improve contrast
+                                      color: Colors.black,
                                     ),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 8.0),
                                   Text(
-                                    briefDescription,
+                                    noteDescription.length > 50
+                                        ? noteDescription.substring(0, 50) + '...'
+                                        : noteDescription,
                                     style: const TextStyle(
                                       fontSize: 14.0,
-                                      color: Colors.black87, // Darker color for description
+                                      color: Colors.black87,
                                     ),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -235,7 +219,7 @@ class _MainPageState extends State<MainPage> {
                                     formattedDate,
                                     style: const TextStyle(
                                       fontSize: 12.0,
-                                      color: Colors.black54, // Muted color for date and time
+                                      color: Colors.black54,
                                     ),
                                   ),
                                 ],

@@ -1,178 +1,111 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'services/firestore.dart'; // Import FirestoreService
 
-class NotePage extends StatefulWidget {
-  const NotePage({super.key});
+class NoteScreen extends StatefulWidget {
+  final String? docID; // Optional document ID for editing an existing note
+  final String? initialText; // Optional initial text for editing
+  final String? initialTitle; // Optional initial title for editing
+  final bool? isFavorite; // Optional initial favorite status
+
+  const NoteScreen({super.key, this.docID, this.initialText, this.initialTitle, this.isFavorite});
 
   @override
-  State<NotePage> createState() => _NotePageState();
+  State<NoteScreen> createState() => _NoteScreenState();
 }
 
-class _NotePageState extends State<NotePage> {
-  // Ensure collection name 'notedeck' is correctly referenced
-  final CollectionReference myNoteDeck = FirebaseFirestore.instance.collection('notedeck');
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _noteController = TextEditingController();
-
-  bool _isFavorite = false;
+class _NoteScreenState extends State<NoteScreen> {
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final FirestoreService firestoreService = FirestoreService();
+  bool isFavorite = false;
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: _buildBackButton(),
-        title: const Text('Notes'),
-        actions: [
-          _buildFavoriteButton(),
-          _buildSaveButton(),
-        ],
-        backgroundColor: const Color.fromARGB(255, 241, 223, 58),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildTitleTextField(),
-            const SizedBox(height: 20),
-            _buildNoteTextField(),
-          ],
-        ),
-      ),
-    );
+  void initState() {
+    super.initState();
+    // If editing an existing note, pre-fill the fields and favorite status
+    if (widget.docID != null) {
+      titleController.text = widget.initialTitle ?? '';
+      descriptionController.text = widget.initialText ?? '';
+      isFavorite = widget.isFavorite ?? false;
+    }
   }
 
-  // Helper method to build the back button in the AppBar
-  Widget _buildBackButton() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.black),
-        onPressed: () {
-          Navigator.pop(context);
+  // Toggle the favorite status
+  void toggleFavorite() {
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+
+    if (widget.docID != null) {
+      firestoreService.updateNote(
+        widget.docID!,
+        {
+          'title': titleController.text.trim(),
+          'description': descriptionController.text.trim(),
         },
-      ),
-    );
-  }
-
-  // Helper method to build the favorite button in the AppBar
-  Widget _buildFavoriteButton() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: IconButton(
-        icon: Icon(
-          _isFavorite ? Icons.favorite : Icons.favorite_border,
-          color: _isFavorite ? Colors.black : Colors.grey,
-        ),
-        onPressed: () {
-          setState(() {
-            _isFavorite = !_isFavorite;
-          });
-        },
-      ),
-    );
-  }
-
-  // Helper method to build the save button in the AppBar
-  Widget _buildSaveButton() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8.0),
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: IconButton(
-        icon: const Icon(Icons.save, color: Colors.black),
-        onPressed: saveNote,
-      ),
-    );
-  }
-
-  // Helper method to build the title TextField
-  Widget _buildTitleTextField() {
-    return TextField(
-      controller: _titleController,
-      decoration: const InputDecoration(
-        labelText: 'Title',
-        labelStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        border: UnderlineInputBorder(),
-      ),
-      style: const TextStyle(fontSize: 22),
-    );
-  }
-
-  // Helper method to build the note TextField
-  Widget _buildNoteTextField() {
-    return Expanded(
-      child: TextField(
-        controller: _noteController,
-        decoration: const InputDecoration(
-          hintText: 'Type your notes here...',
-          border: InputBorder.none,
-        ),
-        maxLines: null,
-        expands: true,
-        keyboardType: TextInputType.multiline,
-        style: const TextStyle(fontSize: 18),
-      ),
-    );
-  }
-
-  // Method to save the note to Firestore
-  Future<void> saveNote() async {
-    try {
-      final title = _titleController.text.trim();
-      final note = _noteController.text.trim();
-
-      // Ensure title and note are not empty
-      if (title.isEmpty || note.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter both title and note content.')),
-        );
-        return;
-      }
-
-      // Prepare the note data
-      final noteData = {
-        'title': title,
-        'note': note,
-        'isFavorite': _isFavorite,
-        'timestamp': FieldValue.serverTimestamp(),
-      };
-
-      // Save the note to Firestore in 'notedeck' collection
-      await myNoteDeck.add(noteData);
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Note saved successfully!')),
-      );
-
-      // Clear the input fields and reset favorite state
-      _titleController.clear();
-      _noteController.clear();
-      setState(() {
-        _isFavorite = false;
-      });
-    } catch (e) {
-      // Handle errors during note saving
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving note: $e')),
+        isFavorite: isFavorite,
       );
     }
   }
 
   @override
-  void dispose() {
-    _titleController.dispose();
-    _noteController.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Note"),
+        actions: [
+          IconButton(
+            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+            onPressed: toggleFavorite,
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(
+                labelText: 'Title',
+              ),
+            ),
+            TextField(
+              controller: descriptionController,
+              decoration: const InputDecoration(
+                labelText: 'Description',
+              ),
+              maxLines: null,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Add or update note in Firestore
+                if (widget.docID == null) {
+                  firestoreService.addNote(
+                    {
+                      'title': titleController.text.trim(),
+                      'description': descriptionController.text.trim(),
+                    },
+                    isFavorite: isFavorite,
+                  );
+                } else {
+                  firestoreService.updateNote(
+                    widget.docID!,
+                    {
+                      'title': titleController.text.trim(),
+                      'description': descriptionController.text.trim(),
+                    },
+                    isFavorite: isFavorite,
+                  );
+                }
+                Navigator.pop(context); // Go back to the previous page
+              },
+              child: Text(widget.docID == null ? 'Add Note' : 'Update Note'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

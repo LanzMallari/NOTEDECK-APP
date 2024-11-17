@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirestoreService {
   final CollectionReference notes = FirebaseFirestore.instance.collection('notedeck');
 
-  // Create (Add a new note)
+  // Add a new note
   Future<void> addNote(Map<String, String> note, {bool isFavorite = false}) async {
     try {
       await notes.add({
@@ -18,7 +18,7 @@ class FirestoreService {
     }
   }
 
-  // Read (Stream all notes)
+  // Stream all notes
   Stream<QuerySnapshot> getNotesStream() {
     try {
       return notes.orderBy('timestamp', descending: true).snapshots();
@@ -28,17 +28,21 @@ class FirestoreService {
     }
   }
 
-  // Read (Stream only favorite notes)
+  // Stream only favorite notes
   Stream<QuerySnapshot> getFavoriteNotesStream() {
     try {
-      return notes.where('isFavorite', isEqualTo: true).orderBy('timestamp', descending: true).snapshots();
+      return notes
+          .where('isFavorite', isEqualTo: true) // Filter by favorite flag
+          .orderBy('isFavorite')  // Sort by the 'isFavorite' field (optional, based on your needs)
+          .orderBy('timestamp', descending: true) // Sort by timestamp
+          .snapshots(); // Stream the data
     } catch (e) {
-      print("Error getting favorite notes stream: $e");
+
       rethrow;
     }
   }
 
-  // Update (Modify an existing note)
+  // Update an existing note
   Future<void> updateNote(String docID, Map<String, String> updatedNote, {bool? isFavorite}) async {
     try {
       await notes.doc(docID).update({
@@ -53,7 +57,7 @@ class FirestoreService {
     }
   }
 
-  // Delete (Remove a note)
+  // Delete a note
   Future<void> deleteNote(String docID) async {
     try {
       await notes.doc(docID).delete();
