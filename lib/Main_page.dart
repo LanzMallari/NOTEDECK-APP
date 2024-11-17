@@ -63,6 +63,7 @@ class _MainPageState extends State<MainPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false, // Disable the back button
           centerTitle: true,
           title: const Text("NOTEDECK"),
           flexibleSpace: Container(
@@ -131,15 +132,18 @@ class _MainPageState extends State<MainPage> {
 
                     final displayedNotes = isSearching
                         ? notesList.where((note) {
-                      final title = note['title']?.toString().toLowerCase() ?? '';
-                      return title.contains(searchController.text.toLowerCase());
+                      final title =
+                          note['title']?.toString().toLowerCase() ?? '';
+                      return title
+                          .contains(searchController.text.toLowerCase());
                     }).toList()
                         : notesList;
 
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: MasonryGridView.builder(
-                        gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:
+                        const SliverSimpleGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2, // Number of columns
                         ),
                         mainAxisSpacing: 8.0, // Vertical space between items
@@ -148,14 +152,19 @@ class _MainPageState extends State<MainPage> {
                         itemBuilder: (context, index) {
                           DocumentSnapshot document = displayedNotes[index];
                           String docID = document.id;
-                          Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+                          Map<String, dynamic> data =
+                          document.data() as Map<String, dynamic>;
                           String noteTitle = data['title'] ?? '';
                           String noteDescription = data['description'] ?? '';
-                          Timestamp timestamp = data['timestamp'] ?? Timestamp.now();
-                          String formattedDate = DateFormat('EEE, d MMM yyyy, h:mm a').format(timestamp.toDate());
+                          Timestamp timestamp =
+                              data['timestamp'] ?? Timestamp.now();
+                          String formattedDate = DateFormat(
+                              'EEE, d MMM yyyy, h:mm a')
+                              .format(timestamp.toDate());
 
                           // Generate random height for each note
-                          double randomHeight = random.nextDouble() * 100 + 150; // Height between 150 and 250
+                          double randomHeight =
+                              random.nextDouble() * 100 + 150; // 150 to 250
 
                           return GestureDetector(
                             onTap: () async {
@@ -205,7 +214,8 @@ class _MainPageState extends State<MainPage> {
                                   const SizedBox(height: 8.0),
                                   Text(
                                     noteDescription.length > 50
-                                        ? noteDescription.substring(0, 50) + '...'
+                                        ? noteDescription.substring(0, 50) +
+                                        '...'
                                         : noteDescription,
                                     style: const TextStyle(
                                       fontSize: 14.0,
