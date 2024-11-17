@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:notedeck_app/login_page.dart';
-import 'package:notedeck_app/otp_page.dart';
+import 'package:notedeck_app/login_page.dart'; // Update the path accordingly
+import 'package:notedeck_app/services/auth_service.dart'; // Import your AuthService
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ForgotPage extends StatefulWidget {
   const ForgotPage({super.key});
@@ -9,9 +10,11 @@ class ForgotPage extends StatefulWidget {
   State<ForgotPage> createState() => _ForgotPageState();
 }
 
-final TextEditingController _usernameController = TextEditingController();
+final TextEditingController _emailController = TextEditingController();
 
 class _ForgotPageState extends State<ForgotPage> {
+  final AuthService _authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,8 +24,7 @@ class _ForgotPageState extends State<ForgotPage> {
           Container(
             height: 60, // Height of the top bar
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            color: const Color.fromARGB(
-                255, 241, 223, 58), // Background color of the top bar
+            color: const Color.fromARGB(255, 241, 223, 58), // Background color of the top bar
             child: Row(
               children: [
                 // Back button on the left
@@ -58,17 +60,17 @@ class _ForgotPageState extends State<ForgotPage> {
             height: 250,
           ),
 
-          // Username input field
+          // Email input field
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: TextField(
-              controller: _usernameController,
+              controller: _emailController,
               decoration: InputDecoration(
-                labelText: 'Username',
+                labelText: 'Email',
                 border: OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.person),
+                prefixIcon: const Icon(Icons.email),
               ),
-              keyboardType: TextInputType.text,
+              keyboardType: TextInputType.emailAddress,
             ),
           ),
 
@@ -76,19 +78,28 @@ class _ForgotPageState extends State<ForgotPage> {
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ElevatedButton(
-              onPressed: () {
-                // Navigate to OTP page when NEXT button is pressed
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const OtpPage()),
-                );
+              onPressed: () async {
+                String email = _emailController.text.trim();
+
+                if (email.isEmpty) {
+                  Fluttertoast.showToast(msg: "Please enter your email address.");
+                } else {
+                  try {
+                    await _authService.sendPasswordResetEmail(email);
+                    Fluttertoast.showToast(msg: "Password reset email sent!");
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginPage()),
+                    );
+                  } catch (e) {
+                    Fluttertoast.showToast(msg: "Error sending email. Please try again.");
+                  }
+                }
               },
               child: const Text('NEXT'),
               style: ElevatedButton.styleFrom(
-                minimumSize:
-                    const Size(double.infinity, 50), // Full width button
-                backgroundColor:
-                    const Color.fromARGB(255, 241, 223, 58), // Button color
+                minimumSize: const Size(double.infinity, 50), // Full width button
+                backgroundColor: const Color.fromARGB(255, 241, 223, 58), // Button color
                 foregroundColor: Colors.white, // Text color
               ),
             ),
