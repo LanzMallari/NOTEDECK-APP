@@ -65,7 +65,10 @@ class _MainPageState extends State<MainPage> {
         appBar: AppBar(
           automaticallyImplyLeading: false, // Disable the back button
           centerTitle: true,
-          title: const Text("NOTEDECK"),
+          title: const Text("NOTEDECK",style: TextStyle(
+            fontWeight: FontWeight.bold, // Makes the text bold
+          ),),
+
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -139,11 +142,36 @@ class _MainPageState extends State<MainPage> {
                     }).toList()
                         : notesList;
 
+                    // Check if there are no notes to display
+                    if (displayedNotes.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.note_add, // You can change this to any icon you prefer
+                              size: 100.0,
+                              color: Colors.grey[400],
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'No Notes Found',
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: MasonryGridView.builder(
-                        gridDelegate:
-                        const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2, // Number of columns
                         ),
                         mainAxisSpacing: 8.0, // Vertical space between items
